@@ -113,10 +113,19 @@ public class LinkTweaker
         j = ifMatchReplaceWith (link, i, "%29", ")");
       }
       if (j == i) {
+        j = ifMatchReplaceWith (link, i, "%2d", "-");
+      }
+      if (j == i) {
         j = ifMatchReplaceWith (link, i, "%2D", "-");
       }
       if (j == i) {
+        j = ifMatchReplaceWith (link, i, "%2e", ".");
+      }
+      if (j == i) {
         j = ifMatchReplaceWith (link, i, "%2E", ".");
+      }
+      if (j == i) {
+        j = ifMatchReplaceWith (link, i, "%2f", "/");
       }
       if (j == i) {
         j = ifMatchReplaceWith (link, i, "%2F", "/");
@@ -125,16 +134,28 @@ public class LinkTweaker
         j = ifMatchReplaceWith (link, i, "%252F", "/");
       }
       if (j == i) {
+        j = ifMatchReplaceWith (link, i, "%3a", ":");
+      }
+      if (j == i) {
         j = ifMatchReplaceWith (link, i, "%3A", ":");
       }
       if (j == i) {
+        j = ifMatchReplaceWith (link, i, "%3d", "=");
+      }
+      if (j == i) {
         j = ifMatchReplaceWith (link, i, "%3D", "=");
+      }
+      if (j == i) {
+        j = ifMatchReplaceWith (link, i, "%3f", "?");
       }
       if (j == i) {
         j = ifMatchReplaceWith (link, i, "%3F", "?");
       }
       if (j == i) {
         j = ifMatchReplaceWith (link, i, "%2520", "%20");
+      }
+      if (j == i) {
+        j = ifMatchReplaceWith (link, i, "%5f", "_");
       }
       if (j == i) {
         j = ifMatchReplaceWith (link, i, "%5F", "_");
@@ -151,6 +172,7 @@ public class LinkTweaker
         j = ifMatchReplaceWith (link, i, " ", "%20");
       }
       
+      // Remove carriage returns, tabs, line feeds, etc.
       if (j == i) {
         if (link.charAt(i) == '\r' 
             || link.charAt(i) == '\n'
@@ -197,7 +219,27 @@ public class LinkTweaker
           j = ifMatchReplaceWith (link, i, 
               "/Forms/AllItems.aspx?RootFolder=/", 
               "/");
-        }
+          if (j > i) {
+            int path2start = i;
+            int path2end = link.indexOf("/", j);
+            if (path2end < 0) {
+              path2end = link.length();
+            }
+            String path2 = link.substring(path2start, path2end);
+            System.out.println ("path2 = " + path2);
+            int path1start = link.indexOf(path2);
+            if (path1start >= 0 && path1start < path2start) {
+              int path1end = path1start + path2.length();
+              while (path2end < link.length()
+                  && path1end < path2start
+                  && link.charAt(path1end) == link.charAt(path2end)) {
+                path1end++;
+                path2end++;
+              } // end while matching path characters
+              link.delete(path2start, path2end);
+            } // end if we found duplicate paths
+          } // end if we found the rootfolder string
+        } 
         if (j == i) {
           j = ifMatchReplaceWith (link, i, 
               "/Forms/AllItems.aspx", 
@@ -249,7 +291,7 @@ public class LinkTweaker
    @param after  The replacement string, if a match is found.
   
    @return The resulting next index position to be examined. If no replacement
-           was made, this weill be equal to the i param. If a replacement was 
+           was made, this will be equal to the i param. If a replacement was 
            made, it will be equal to i + the length of the to string. 
   */
   private int ifMatchReplaceWith 
