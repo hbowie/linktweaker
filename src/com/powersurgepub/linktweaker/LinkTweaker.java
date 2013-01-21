@@ -187,6 +187,11 @@ public class LinkTweaker
       }
     }
     
+    // Remove email quote identifiers
+    if (j == i) {
+      j = ifMatchReplaceWith (link, i, "> ", "");
+    }
+    
     // Let's make another pass through the link to clean up SharePoint cruft
     if (spCruftCheckBox.isSelected()) {
       i = 0;
