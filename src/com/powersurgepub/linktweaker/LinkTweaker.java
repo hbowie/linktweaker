@@ -21,6 +21,8 @@ public class LinkTweaker
   public static final String PROGRAM_VERSION = "1.00";
   
   public static final String SP_SITES = "/sites";
+  
+  private Home home = Home.getShared(PROGRAM_NAME, PROGRAM_VERSION);
 
   /**
    Creates new form LinkTweaker
@@ -314,13 +316,7 @@ public class LinkTweaker
   public void hyperlinkUpdate (HyperlinkEvent e) {
     HyperlinkEvent.EventType type = e.getEventType();
     if (type == HyperlinkEvent.EventType.ACTIVATED) {
-      try {
-        BrowserLauncher.openURL(e.getURL().toURI().toString());
-      } catch (java.io.IOException ex) {
-        msgLabel.setText("Error in launching link in Web browser");
-      } catch (URISyntaxException ex) {
-        msgLabel.setText("Error in launching link in Web browser");
-      } 
+      home.openURL(e.getURL()); 
     }
   }
 
@@ -579,9 +575,8 @@ public class LinkTweaker
 
   private void launchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_launchButtonActionPerformed
     tweakLink();
-    try {
-      BrowserLauncher.openURL(outputTextArea.getText());
-    } catch (java.io.IOException e) {
+    boolean ok = home.openURL(outputTextArea.getText());
+    if (! ok) {
       msgLabel.setText("Error in launching link in Web browser");
     }
   }//GEN-LAST:event_launchButtonActionPerformed
