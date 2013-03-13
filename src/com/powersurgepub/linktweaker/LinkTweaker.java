@@ -1,5 +1,22 @@
+/*
+ * Copyright 2012 - 2013 Herb Bowie
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.powersurgepub.linktweaker;
 
+  import com.powersurgepub.psdatalib.ui.*;
   import com.powersurgepub.psutils.*;
   import com.powersurgepub.xos2.*;
   import java.io.*;
@@ -8,64 +25,91 @@ package com.powersurgepub.linktweaker;
   import javax.swing.event.*;
 
 /**
- Tweaks URLs for internal Boeing use. 
+ Tweaks URLs for simplicity and clarity. 
 
  @author Herb Bowie
  */
 public class LinkTweaker 
     extends javax.swing.JFrame
         implements
-            HyperlinkListener {
+            HyperlinkListener,
+            XHandler {
   
   public static final String PROGRAM_NAME = "LinkTweaker";
   public static final String PROGRAM_VERSION = "1.00";
   
   public static final String SP_SITES = "/sites";
   
-  private Home home = Home.getShared(PROGRAM_NAME, PROGRAM_VERSION);
+  private boolean runningAsMainApp = true;
+  
+  private             Appster appster;
+
+  private             String  country = "  ";
+  private             String  language = "  ";
+
+  private             Home home;
+  private             ProgramVersion      programVersion;
+  private             XOS                 xos = XOS.getShared();
+  private             Trouble             trouble = Trouble.getShared();
+  
+  // About window
+  private             AboutWindow         aboutWindow;
+  
+  private             LinkTweakerApp      linkTweakerApp = null;
 
   /**
    Creates new form LinkTweaker
    */
   public LinkTweaker() {
+    constructApp();
+  }
+  
+  public LinkTweaker (LinkTweakerApp linkTweakerApp) {
+    this.runningAsMainApp = false;
+    this.linkTweakerApp = linkTweakerApp;
+    if (runningAsMainApp) {
+      constructApp();
+    } else {
+      constructWindow();
+    }
+  }
+  
+  private void constructApp() {
+    
+    appster = new Appster
+        ("powersurgepub", "com",
+          PROGRAM_NAME, PROGRAM_VERSION,
+          language, country,
+          this, this);
+    
+    aboutWindow = new AboutWindow(false);
+
+    constructWindow();
+  }
+  
+  private void constructWindow() {
+    home = Home.getShared ();
+    programVersion = ProgramVersion.getShared ();
     initComponents();
     setBounds (100, 100, 620, 540);
     try {
-      UIManager.setLookAndFeel
-        (UIManager.getSystemLookAndFeelClassName());
+      javax.swing.UIManager.setLookAndFeel
+        (javax.swing.UIManager.getSystemLookAndFeelClassName());
     } catch (Exception e) {
       // Let's hope this doesn't happen!!
     }
     SwingUtilities.updateComponentTreeUI (this);
-    
-    aboutJavaText.setText
-        (System.getProperty("java.vm.name") +
-        " version " + System.getProperty("java.vm.version") +
-        " from " + StringUtils.removeQuotes(System.getProperty("java.vm.vendor")));
-    programNameAndVersionText.setText
-        (PROGRAM_NAME
-        + " version " + PROGRAM_VERSION);
-
-    URL aboutURL = LinkTweaker.class.getResource("about.html");
-    try {
-      aboutTextPane.setPage(aboutURL);
-    } catch (IOException e) {
-      StringBuilder about = new StringBuilder();
-      about.append("<html>");
-      about.append("<p><font face=\"Arial\" size=\"4\">Written for Boeing by Herb Bowie. </font></p>");
-
-      about.append("<p><font face=\"Arial\" size=\"4\">This <span xmlns:dct=\"http://purl.org/dc/terms/\" href=\"http://purl.org/dc/dcmitype/InteractiveResource\" rel=\"dct:type\">work</span> is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.  </font></p>");
-
-      about.append("<p><font face=\"Arial\" size=\"4\">LinkTweaker is written in Java. It may be run on Windows, Macintosh and other Unix platforms. LinkTweaker requires a Java Virtual Machine (JVM/JRE) of 1.5 (aka J2SE 5.0) or later.  </font></p>");
-
-      about.append("<p><font face=\"Arial\" size=\"4\"><a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png\" /></a> </font></p>");
-
-      about.append("</html>");
-      aboutTextPane.setText(about.toString());
-    }
-
-    aboutTextPane.addHyperlinkListener (this);
-
+  }
+  
+  /**
+   Set the input link to the passed value, when using this class as an
+   auxiliary window to a main program. 
+  
+   @param passedLink The link to be tweaked. 
+  */
+  public void setLink(String passedLink) {
+    inputTextArea.setText(passedLink);
+    outputTextArea.setText(passedLink);
   }
   
   /**
@@ -73,7 +117,7 @@ public class LinkTweaker
   */
   private void tweakLink() {
     
-    StringBuilder link = new StringBuilder(inputTextArea.getText());
+    StringBuilder link = new StringBuilder(inputTextArea.getText().trim());
     
     // If it's a file path, insert the proper URL protocol (aka scheme)
     if (link.length() > 0 && 
@@ -286,6 +330,9 @@ public class LinkTweaker
     
     outputTextArea.setText(link.toString());
     msgLabel.setText(" ");
+    if (linkTweakerApp != null) {
+      linkTweakerApp.setTweakedLink (link.toString());
+    }
   }
   
   /**
@@ -319,6 +366,82 @@ public class LinkTweaker
       home.openURL(e.getURL()); 
     }
   }
+  
+  /**
+     Standard way to respond to an About Menu Item Selection on a Mac.
+   */
+  public void handleAbout() {
+    displayAuxiliaryWindow(aboutWindow);
+  }
+  
+  public void displayAuxiliaryWindow(JFrame window) {
+    window.setLocation(
+        this.getX() + 60,
+        this.getY() + 60);
+    WindowMenuManager.getShared().makeVisible(window);
+  }
+  
+  /**      
+    Standard way to respond to a document being passed to this application on a Mac.
+   
+    @param inFile File to be processed by this application, generally
+                  as a result of a file or directory being dragged
+                  onto the application icon.
+   */
+  public void handleOpenFile (File inFile) {
+    // Not supported
+  }
+  
+  /**
+   Open the passed URI. 
+   
+   @param inURI The URI to open. 
+  */
+  public void handleOpenURI(URI inURI) {
+    // Not supported
+  }
+  
+  public boolean preferencesAvailable() {
+    return false;
+  }
+  
+  /**
+     Standard way to respond to a Preferences Item Selection on a Mac.
+   */
+  public void handlePreferences() {
+    // No prefs to display
+  }
+  
+  /**
+   Standard way to respond to a print request.
+   */
+  public void handlePrintFile (File printFile) {
+    // not supported
+  }
+  
+  private void windowClose() {
+
+    if (runningAsMainApp) {
+      System.out.println("  Running as Main App = true");
+      handleQuit();
+    } else {
+      System.out.println("  Running as Main App = false");
+      WindowMenuManager.getShared().hide(this);
+    }
+  }
+  
+  /**
+     We're out of here!
+   */
+  public void handleQuit() {
+    System.out.println("LinkTweaker.handleQuit");
+    savePrefs();
+    System.exit(0);
+  }
+
+  private void savePrefs() {
+    
+  }
 
   /**
    This method is called from within the constructor to initialize the form.
@@ -330,8 +453,6 @@ public class LinkTweaker
   private void initComponents() {
     java.awt.GridBagConstraints gridBagConstraints;
 
-    tabs = new javax.swing.JTabbedPane();
-    linksTab = new javax.swing.JPanel();
     inputLabel = new javax.swing.JLabel();
     inputScrollPane = new javax.swing.JScrollPane();
     inputTextArea = new javax.swing.JTextArea();
@@ -345,27 +466,29 @@ public class LinkTweaker
     launchButton = new javax.swing.JButton();
     copyButton = new javax.swing.JButton();
     msgLabel = new javax.swing.JLabel();
-    aboutTab = new javax.swing.JPanel();
-    programNameAndVersionText = new javax.swing.JLabel();
-    aboutScrollPane = new javax.swing.JScrollPane();
-    aboutTextPane = new javax.swing.JEditorPane();
-    aboutJavaLabel = new javax.swing.JLabel();
-    aboutJavaText = new javax.swing.JTextField();
 
-    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+    setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
     setTitle("LinkTweaker");
-
-    linksTab.setLayout(new java.awt.GridBagLayout());
+    addWindowListener(new java.awt.event.WindowAdapter() {
+      public void windowClosing(java.awt.event.WindowEvent evt) {
+        formWindowClosing(evt);
+      }
+      public void windowClosed(java.awt.event.WindowEvent evt) {
+        formWindowClosed(evt);
+      }
+    });
+    getContentPane().setLayout(new java.awt.GridBagLayout());
 
     inputLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
     inputLabel.setText("Input Link:");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
+    gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    linksTab.add(inputLabel, gridBagConstraints);
+    getContentPane().add(inputLabel, gridBagConstraints);
 
     inputTextArea.setColumns(20);
     inputTextArea.setLineWrap(true);
@@ -383,6 +506,7 @@ public class LinkTweaker
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.ipadx = 221;
     gridBagConstraints.ipady = 61;
@@ -390,17 +514,18 @@ public class LinkTweaker
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    linksTab.add(inputScrollPane, gridBagConstraints);
+    getContentPane().add(inputScrollPane, gridBagConstraints);
 
     outputLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
     outputLabel.setText("Output Link:");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    linksTab.add(outputLabel, gridBagConstraints);
+    getContentPane().add(outputLabel, gridBagConstraints);
 
     outputTextArea.setColumns(20);
     outputTextArea.setLineWrap(true);
@@ -415,6 +540,7 @@ public class LinkTweaker
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.ipadx = 221;
     gridBagConstraints.ipady = 61;
@@ -422,7 +548,7 @@ public class LinkTweaker
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    linksTab.add(outputScrollPane, gridBagConstraints);
+    getContentPane().add(outputScrollPane, gridBagConstraints);
 
     spCruftCheckBox.setText("Remove SharePoint Cruft?");
     spCruftCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -431,21 +557,24 @@ public class LinkTweaker
       }
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 4;
-    linksTab.add(spCruftCheckBox, gridBagConstraints);
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+    getContentPane().add(spCruftCheckBox, gridBagConstraints);
 
-    redirectCheckBox.setText("Insert WSSO Redirect?");
+    redirectCheckBox.setText("Insert Redirect?");
     redirectCheckBox.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         redirectCheckBoxActionPerformed(evt);
       }
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 5;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    linksTab.add(redirectCheckBox, gridBagConstraints);
+    getContentPane().add(redirectCheckBox, gridBagConstraints);
 
     spacesCheckBox.setText("Show spaces as spaces?");
     spacesCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -454,11 +583,15 @@ public class LinkTweaker
       }
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 6;
-    linksTab.add(spacesCheckBox, gridBagConstraints);
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+    getContentPane().add(spacesCheckBox, gridBagConstraints);
 
     tweakButton.setText("Tweak");
+    tweakButton.setMaximumSize(new java.awt.Dimension(100, 29));
+    tweakButton.setPreferredSize(new java.awt.Dimension(100, 29));
     tweakButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         tweakButtonActionPerformed(evt);
@@ -466,11 +599,13 @@ public class LinkTweaker
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 7;
-    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    linksTab.add(tweakButton, gridBagConstraints);
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 12);
+    getContentPane().add(tweakButton, gridBagConstraints);
 
     launchButton.setText("Launch");
+    launchButton.setMaximumSize(new java.awt.Dimension(100, 29));
+    launchButton.setPreferredSize(new java.awt.Dimension(100, 29));
     launchButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         launchButtonActionPerformed(evt);
@@ -478,11 +613,13 @@ public class LinkTweaker
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 8;
-    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    linksTab.add(launchButton, gridBagConstraints);
+    gridBagConstraints.gridy = 5;
+    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 12);
+    getContentPane().add(launchButton, gridBagConstraints);
 
     copyButton.setText("Copy");
+    copyButton.setMaximumSize(new java.awt.Dimension(100, 29));
+    copyButton.setPreferredSize(new java.awt.Dimension(100, 29));
     copyButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         copyButtonActionPerformed(evt);
@@ -490,73 +627,18 @@ public class LinkTweaker
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 9;
-    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    linksTab.add(copyButton, gridBagConstraints);
+    gridBagConstraints.gridy = 6;
+    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 12);
+    getContentPane().add(copyButton, gridBagConstraints);
 
     msgLabel.setText(" ");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 10;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    linksTab.add(msgLabel, gridBagConstraints);
-
-    tabs.addTab("Links", linksTab);
-
-    aboutTab.setLayout(new java.awt.GridBagLayout());
-
-    programNameAndVersionText.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-    programNameAndVersionText.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-    programNameAndVersionText.setText("xxx version n.nn");
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 0;
+    gridBagConstraints.gridy = 7;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    aboutTab.add(programNameAndVersionText, gridBagConstraints);
-
-    aboutTextPane.setEditable(false);
-    aboutTextPane.setContentType("text/html"); // NOI18N
-    aboutScrollPane.setViewportView(aboutTextPane);
-
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    aboutTab.add(aboutScrollPane, gridBagConstraints);
-
-    aboutJavaLabel.setText("About Java:");
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
-    gridBagConstraints.ipadx = 2;
-    gridBagConstraints.ipady = 2;
-    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    aboutTab.add(aboutJavaLabel, gridBagConstraints);
-
-    aboutJavaText.setEditable(false);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.ipadx = 2;
-    gridBagConstraints.ipady = 2;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    aboutTab.add(aboutJavaText, gridBagConstraints);
-
-    tabs.addTab("About", aboutTab);
-
-    getContentPane().add(tabs, java.awt.BorderLayout.CENTER);
+    getContentPane().add(msgLabel, gridBagConstraints);
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
@@ -605,6 +687,16 @@ public class LinkTweaker
     tweakLink();
   }//GEN-LAST:event_spacesCheckBoxActionPerformed
 
+  private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+    System.out.println("LinkTweaker.formWindowClosed");
+    windowClose();
+  }//GEN-LAST:event_formWindowClosed
+
+  private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+    System.out.println("LinkTweaker.formWindowClosing");
+    windowClose();
+  }//GEN-LAST:event_formWindowClosing
+
   /**
    @param args the command line arguments
    */
@@ -640,26 +732,18 @@ public class LinkTweaker
     });
   }
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JLabel aboutJavaLabel;
-  private javax.swing.JTextField aboutJavaText;
-  private javax.swing.JScrollPane aboutScrollPane;
-  private javax.swing.JPanel aboutTab;
-  private javax.swing.JEditorPane aboutTextPane;
   private javax.swing.JButton copyButton;
   private javax.swing.JLabel inputLabel;
   private javax.swing.JScrollPane inputScrollPane;
   private javax.swing.JTextArea inputTextArea;
   private javax.swing.JButton launchButton;
-  private javax.swing.JPanel linksTab;
   private javax.swing.JLabel msgLabel;
   private javax.swing.JLabel outputLabel;
   private javax.swing.JScrollPane outputScrollPane;
   private javax.swing.JTextArea outputTextArea;
-  private javax.swing.JLabel programNameAndVersionText;
   private javax.swing.JCheckBox redirectCheckBox;
   private javax.swing.JCheckBox spCruftCheckBox;
   private javax.swing.JCheckBox spacesCheckBox;
-  private javax.swing.JTabbedPane tabs;
   private javax.swing.JButton tweakButton;
   // End of variables declaration//GEN-END:variables
 }
