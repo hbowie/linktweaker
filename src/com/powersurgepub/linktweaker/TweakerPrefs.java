@@ -31,6 +31,7 @@ public class TweakerPrefs
 
   // Prefs explicitly set by the user in this window
   public static final String REDIRECT_URL               = "redirect-url";
+  public static final String PREFS_TAB_NAME             = "Link Tweaker";
 
   // Other prefs used by LinkTweaker
   public static final String PREFS_LEFT    = "left";
@@ -94,8 +95,9 @@ public class TweakerPrefs
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.gridheight = 3;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 0.5;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     add(redirectScrollPane, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -104,7 +106,7 @@ public class TweakerPrefs
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.weighty = 0.5;
     add(filler01, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 

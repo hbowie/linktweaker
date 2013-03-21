@@ -36,15 +36,25 @@ public class PrefsWindow extends javax.swing.JFrame {
   private TweakerPrefs      tweakerPrefs ;
   
   /** Creates new form PrefsWindow */
-  public PrefsWindow() {
+  public PrefsWindow(TweakerPrefs tweakerPrefs) {
 
+    super();
+    this.tweakerPrefs = tweakerPrefs;
+    
     initComponents();
     
     this.setTitle (Home.getShared().getProgramName() + " Preferences");
     this.setBounds (100, 100, 600, 400);
     
-    tweakerPrefs = new TweakerPrefs();
-    prefsTabs.addTab("Link Tweaker", tweakerPrefs);
+    prefsTabs.addTab(TweakerPrefs.PREFS_TAB_NAME, tweakerPrefs);
+    
+    try {
+      javax.swing.UIManager.setLookAndFeel
+        (javax.swing.UIManager.getSystemLookAndFeelClassName());
+    } catch (Exception e) {
+      // Let's hope this doesn't happen!!
+    }
+    SwingUtilities.updateComponentTreeUI (this);
     
     setupComplete = true;
   }
@@ -52,13 +62,13 @@ public class PrefsWindow extends javax.swing.JFrame {
   public void savePrefs() {
     tweakerPrefs.savePrefs();
   }
-
-  public TweakerPrefs getTweakerPrefs() {
-    return tweakerPrefs;
-  }
   
   public String getRedirectURL () {
     return tweakerPrefs.getRedirectURL();
+  }
+
+  public TweakerPrefs getTweakerPrefs() {
+    return tweakerPrefs;
   }
   
   /** This method is called from within the constructor to

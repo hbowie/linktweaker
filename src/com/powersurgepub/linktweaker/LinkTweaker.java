@@ -19,6 +19,8 @@ package com.powersurgepub.linktweaker;
   import com.powersurgepub.psdatalib.ui.*;
   import com.powersurgepub.psutils.*;
   import com.powersurgepub.xos2.*;
+  import java.awt.*;
+  import java.awt.event.*;
   import java.io.*;
   import java.net.*;
   import javax.swing.*;
@@ -40,7 +42,15 @@ public class LinkTweaker
   
   public static final String SP_SITES = "/sites";
   
+  public static final boolean PREFS_AVAILABLE = true;
+  
   private boolean runningAsMainApp = true;
+  
+  private     static  final int   DEFAULT_WIDTH = 620;
+  private     static  final int   DEFAULT_HEIGHT = 540;
+  
+  private                   int   defaultX = 0;
+  private                   int   defaultY = 0;
   
   private             Appster appster;
 
@@ -55,7 +65,33 @@ public class LinkTweaker
   // About window
   private             AboutWindow         aboutWindow;
   
+  private             PrefsWindow         prefsWindow;
+  
+  private             TweakerPrefs        tweakerPrefs;
+  
   private             LinkTweakerApp      linkTweakerApp = null;
+  
+  // Menu Objects
+  private			JMenuBar						menuBar;
+  
+  private			JMenu								fileMenu;
+  private			JMenuItem						fileOpen;
+  private			JMenuItem						fileExit;
+  
+  private     JMenu               toolsMenu;
+  private     JMenuItem           toolsOptions;
+  
+  private     JMenu               windowMenu;
+  
+  private			JMenu								helpMenu;
+  private     JMenuItem           helpHistory;
+  private			JMenuItem						helpUserGuide;
+  private     JSeparator          helpSeparator2;
+  private			JMenuItem						helpAbout;
+  
+  private			JMenuItem						helpPSPubWebSite;
+  private     JSeparator          helpSeparator3;
+  private     JMenuItem           helpReduceWindowSize;
 
   /**
    Creates new form LinkTweaker
@@ -64,9 +100,10 @@ public class LinkTweaker
     constructApp();
   }
   
-  public LinkTweaker (LinkTweakerApp linkTweakerApp) {
+  public LinkTweaker (LinkTweakerApp linkTweakerApp, JTabbedPane prefsTabs) {
     this.runningAsMainApp = false;
     this.linkTweakerApp = linkTweakerApp;
+    tweakerPrefs = new TweakerPrefs();
     if (runningAsMainApp) {
       constructApp();
     } else {
@@ -82,16 +119,114 @@ public class LinkTweaker
           language, country,
           this, this);
     
-    aboutWindow = new AboutWindow(false);
+    aboutWindow = new AboutWindow(false, true, false, false, "2012");
+    
+    tweakerPrefs = new TweakerPrefs();
+    
+    prefsWindow = new PrefsWindow (tweakerPrefs);
+    
+    Trouble.getShared().setParent(this);
+    if (PREFS_AVAILABLE) {
+      xos.enablePreferences();
+    }
 
     constructWindow();
+    
+    // Create Menus for the app
+    menuBar = new JMenuBar();
+    this.setJMenuBar (menuBar);
+    
+    // File menu
+    if (! xos.isRunningOnMacOS()) {
+      fileMenu = new JMenu("File");
+      menuBar.add (fileMenu);
+      fileExit = new JMenuItem ("Exit/Quit");
+      fileExit.setAccelerator (KeyStroke.getKeyStroke (KeyEvent.VK_Q,
+        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      fileMenu.add (fileExit);
+      fileExit.addActionListener (new ActionListener ()
+        {
+          public void actionPerformed (ActionEvent event) {
+            handleQuit();
+          } // end actionPerformed method
+        } // end action listener
+      );
+    }
+    
+    // Tools menu
+    if (! xos.isRunningOnMacOS()) {
+      toolsMenu = new JMenu("Tools");
+      menuBar.add (toolsMenu);
+      toolsOptions = new JMenuItem ("Options");
+      toolsMenu.add (toolsOptions);
+      toolsOptions.addActionListener (new ActionListener ()
+        {
+          public void actionPerformed (ActionEvent event) {
+            handlePreferences();
+          } // end actionPerformed method
+        } // end action listener
+      );
+    }
+    
+    // Window menu
+    windowMenu = new JMenu("Window");
+    menuBar.add (windowMenu);
+    
+    // Help Menu 
+    helpMenu = new JMenu("Help");
+    menuBar.add (helpMenu);
+    if (! xos.isRunningOnMacOS()) {
+      helpAbout = new JMenuItem ("About " + PROGRAM_NAME);
+      helpMenu.add (helpAbout);
+      helpAbout.addActionListener (new ActionListener ()
+        {
+          public void actionPerformed (ActionEvent event) {
+            handleAbout();
+          } // end actionPerformed method
+        } // end action listener
+      );
+    } 
+    helpSeparator3 = new JSeparator();
+    helpMenu.add (helpSeparator3);
+    
+    helpReduceWindowSize = new JMenuItem ("Reduce Window Size");
+    helpReduceWindowSize.setAccelerator (KeyStroke.getKeyStroke (KeyEvent.VK_W,
+        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+    helpMenu.add (helpReduceWindowSize);
+    helpReduceWindowSize.addActionListener(new ActionListener()
+      {
+        public void actionPerformed (ActionEvent event) {
+          setDefaultScreenSizeAndLocation();
+        }
+      });
+    
+    xos.setXHandler (this);
+    xos.setMainWindow (this);
+    xos.setFileMenu (fileMenu);
+    xos.setHelpMenu (helpMenu);
+    WindowMenuManager.getShared().addWindowMenu(windowMenu);
+    /* 
+    try {
+      userGuideURL = new URL (pageURL, USER_GUIDE);
+    } catch (MalformedURLException e) {
+    } 
+    */
+    /* 
+    try {
+      programHistoryURL = new URL(pageURL, PROGRAM_HISTORY);
+    } catch (MalformedURLException e) {
+      // shouldn't happen
+    } 
+    */
+    // xos.setHelpMenuItem (helpUserGuide);
+
   }
   
   private void constructWindow() {
     home = Home.getShared ();
     programVersion = ProgramVersion.getShared ();
     initComponents();
-    setBounds (100, 100, 620, 540);
+    setBounds (100, 100, DEFAULT_WIDTH, DEFAULT_HEIGHT);
     try {
       javax.swing.UIManager.setLookAndFeel
         (javax.swing.UIManager.getSystemLookAndFeelClassName());
@@ -99,6 +234,20 @@ public class LinkTweaker
       // Let's hope this doesn't happen!!
     }
     SwingUtilities.updateComponentTreeUI (this);
+  }
+  
+  private void setDefaultScreenSizeAndLocation() {
+
+		this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    this.setResizable (true);
+		calcDefaultScreenLocation();
+		this.setLocation (defaultX, defaultY);
+  }
+  
+  private void calcDefaultScreenLocation() {
+    Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+    defaultX = (d.width - this.getSize().width) / 2;
+    defaultY = (d.height - this.getSize().height) / 2;
   }
   
   /**
@@ -325,7 +474,7 @@ public class LinkTweaker
     
     // Insert a redirect, if user has so specified
     if (redirectCheckBox.isSelected()) {
-      link.insert(0, "http://wsso-support.web.boeing.com:2015/redirect.html?URL=");
+      link.insert(0, tweakerPrefs.getRedirectURL());
     }
     
     outputTextArea.setText(link.toString());
@@ -402,14 +551,18 @@ public class LinkTweaker
   }
   
   public boolean preferencesAvailable() {
-    return false;
+    return PREFS_AVAILABLE;
   }
   
   /**
      Standard way to respond to a Preferences Item Selection on a Mac.
    */
   public void handlePreferences() {
-    // No prefs to display
+    displayPrefs ();
+  }
+
+  public void displayPrefs () {
+    displayAuxiliaryWindow(prefsWindow);
   }
   
   /**
@@ -440,7 +593,7 @@ public class LinkTweaker
   }
 
   private void savePrefs() {
-    
+    tweakerPrefs.savePrefs();
   }
 
   /**
