@@ -57,13 +57,17 @@ public class LinkTweaker
   private             String  country = "  ";
   private             String  language = "  ";
 
-  private             Home home;
+  private             Home                home;
   private             ProgramVersion      programVersion;
-  private             XOS                 xos = XOS.getShared();
+  private             XOS                 xos;
   private             Trouble             trouble = Trouble.getShared();
   
   // About window
   private             AboutWindow         aboutWindow;
+  
+  private             LogWindow           logWindow;
+  private             Logger              logger     = Logger.getShared();
+  private             LogOutput           logOutput;
   
   private             PrefsWindow         prefsWindow;
   
@@ -84,8 +88,7 @@ public class LinkTweaker
   private     JMenu               windowMenu;
   
   private			JMenu								helpMenu;
-  private     JMenuItem           helpHistory;
-  private			JMenuItem						helpUserGuide;
+
   private     JSeparator          helpSeparator2;
   private			JMenuItem						helpAbout;
   
@@ -103,6 +106,8 @@ public class LinkTweaker
   public LinkTweaker (LinkTweakerApp linkTweakerApp, JTabbedPane prefsTabs) {
     this.runningAsMainApp = false;
     this.linkTweakerApp = linkTweakerApp;
+    home = Home.getShared ();
+    xos = XOS.getShared();
     tweakerPrefs = new TweakerPrefs();
     if (runningAsMainApp) {
       constructApp();
@@ -119,6 +124,16 @@ public class LinkTweaker
           language, country,
           this, this);
     
+    home = Home.getShared ();
+    xos = XOS.getShared();
+    
+    logWindow = new LogWindow ();
+    logOutput = new LogOutputText(logWindow.getTextArea());
+    Logger.getShared().setLog (logOutput);
+    Logger.getShared().setLogAllData (false);
+    Logger.getShared().setLogThreshold (LogEvent.NORMAL);
+    WindowMenuManager.getShared().add(logWindow);
+    
     aboutWindow = new AboutWindow(false, true, false, false, "2012");
     
     tweakerPrefs = new TweakerPrefs();
@@ -132,14 +147,18 @@ public class LinkTweaker
 
     constructWindow();
     
+    xos.setXHandler (this);
+    xos.setMainWindow (this);
+    
     // Create Menus for the app
     menuBar = new JMenuBar();
     this.setJMenuBar (menuBar);
     
     // File menu
+    fileMenu = new JMenu("File");
     if (! xos.isRunningOnMacOS()) {
-      fileMenu = new JMenu("File");
       menuBar.add (fileMenu);
+      /*
       fileExit = new JMenuItem ("Exit/Quit");
       fileExit.setAccelerator (KeyStroke.getKeyStroke (KeyEvent.VK_Q,
         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -151,7 +170,9 @@ public class LinkTweaker
           } // end actionPerformed method
         } // end action listener
       );
+      */
     }
+    xos.setFileMenu (fileMenu);
     
     // Tools menu
     if (! xos.isRunningOnMacOS()) {
@@ -175,6 +196,10 @@ public class LinkTweaker
     // Help Menu 
     helpMenu = new JMenu("Help");
     menuBar.add (helpMenu);
+    xos.setHelpMenu (helpMenu);
+    home.setHelpMenu(helpMenu);
+    xos.setHelpMenuItem (home.getHelpMenuItem());
+    /*
     if (! xos.isRunningOnMacOS()) {
       helpAbout = new JMenuItem ("About " + PROGRAM_NAME);
       helpMenu.add (helpAbout);
@@ -188,6 +213,7 @@ public class LinkTweaker
     } 
     helpSeparator3 = new JSeparator();
     helpMenu.add (helpSeparator3);
+    */
     
     helpReduceWindowSize = new JMenuItem ("Reduce Window Size");
     helpReduceWindowSize.setAccelerator (KeyStroke.getKeyStroke (KeyEvent.VK_W,
@@ -200,10 +226,9 @@ public class LinkTweaker
         }
       });
     
-    xos.setXHandler (this);
-    xos.setMainWindow (this);
-    xos.setFileMenu (fileMenu);
-    xos.setHelpMenu (helpMenu);
+
+    
+    
     WindowMenuManager.getShared().addWindowMenu(windowMenu);
     /* 
     try {
@@ -218,12 +243,12 @@ public class LinkTweaker
       // shouldn't happen
     } 
     */
-    // xos.setHelpMenuItem (helpUserGuide);
+    // xos.setHelpMenuItem (helpUserGuideMenuItem);
 
   }
   
   private void constructWindow() {
-    home = Home.getShared ();
+    
     programVersion = ProgramVersion.getShared ();
     initComponents();
     setBounds (100, 100, DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -426,7 +451,7 @@ public class LinkTweaker
               path2end = link.length();
             }
             String path2 = link.substring(path2start, path2end);
-            System.out.println ("path2 = " + path2);
+            // System.out.println ("path2 = " + path2);
             int path1start = link.indexOf(path2);
             if (path1start >= 0 && path1start < path2start) {
               int path1end = path1start + path2.length();
@@ -575,10 +600,10 @@ public class LinkTweaker
   private void windowClose() {
 
     if (runningAsMainApp) {
-      System.out.println("  Running as Main App = true");
+      // System.out.println("  Running as Main App = true");
       handleQuit();
     } else {
-      System.out.println("  Running as Main App = false");
+      // System.out.println("  Running as Main App = false");
       WindowMenuManager.getShared().hide(this);
     }
   }
@@ -587,7 +612,7 @@ public class LinkTweaker
      We're out of here!
    */
   public void handleQuit() {
-    System.out.println("LinkTweaker.handleQuit");
+    // System.out.println("LinkTweaker.handleQuit");
     savePrefs();
     System.exit(0);
   }
@@ -713,6 +738,7 @@ public class LinkTweaker
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 4;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.weighty = 0.5;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     getContentPane().add(spCruftCheckBox, gridBagConstraints);
 
@@ -841,12 +867,12 @@ public class LinkTweaker
   }//GEN-LAST:event_spacesCheckBoxActionPerformed
 
   private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-    System.out.println("LinkTweaker.formWindowClosed");
+    // System.out.println("LinkTweaker.formWindowClosed");
     windowClose();
   }//GEN-LAST:event_formWindowClosed
 
   private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-    System.out.println("LinkTweaker.formWindowClosing");
+    // System.out.println("LinkTweaker.formWindowClosing");
     windowClose();
   }//GEN-LAST:event_formWindowClosing
 
