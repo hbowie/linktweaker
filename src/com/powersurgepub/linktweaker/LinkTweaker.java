@@ -637,13 +637,15 @@ public class LinkTweaker
     outputLabel = new javax.swing.JLabel();
     outputScrollPane = new javax.swing.JScrollPane();
     outputTextArea = new javax.swing.JTextArea();
-    spCruftCheckBox = new javax.swing.JCheckBox();
-    redirectCheckBox = new javax.swing.JCheckBox();
-    spacesCheckBox = new javax.swing.JCheckBox();
+    msgLabel = new javax.swing.JLabel();
+    buttonPanel = new javax.swing.JPanel();
     tweakButton = new javax.swing.JButton();
     launchButton = new javax.swing.JButton();
     copyButton = new javax.swing.JButton();
-    msgLabel = new javax.swing.JLabel();
+    optionPanel = new javax.swing.JPanel();
+    spCruftCheckBox = new javax.swing.JCheckBox();
+    redirectCheckBox = new javax.swing.JCheckBox();
+    spacesCheckBox = new javax.swing.JCheckBox();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
     setTitle("LinkTweaker");
@@ -690,7 +692,7 @@ public class LinkTweaker
     gridBagConstraints.ipady = 61;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.weighty = 0.5;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     getContentPane().add(inputScrollPane, gridBagConstraints);
 
@@ -724,91 +726,9 @@ public class LinkTweaker
     gridBagConstraints.ipady = 61;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    getContentPane().add(outputScrollPane, gridBagConstraints);
-
-    spCruftCheckBox.setText("Remove SharePoint Cruft?");
-    spCruftCheckBox.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        spCruftCheckBoxActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 4;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weighty = 0.5;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    getContentPane().add(spCruftCheckBox, gridBagConstraints);
-
-    redirectCheckBox.setText("Insert Redirect?");
-    redirectCheckBox.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        redirectCheckBoxActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 5;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    getContentPane().add(redirectCheckBox, gridBagConstraints);
-
-    spacesCheckBox.setText("Show spaces as spaces?");
-    spacesCheckBox.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        spacesCheckBoxActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 6;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-    getContentPane().add(spacesCheckBox, gridBagConstraints);
-
-    tweakButton.setText("Tweak");
-    tweakButton.setMaximumSize(new java.awt.Dimension(100, 29));
-    tweakButton.setPreferredSize(new java.awt.Dimension(100, 29));
-    tweakButton.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        tweakButtonActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
-    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 12);
-    getContentPane().add(tweakButton, gridBagConstraints);
-
-    launchButton.setText("Launch");
-    launchButton.setMaximumSize(new java.awt.Dimension(100, 29));
-    launchButton.setPreferredSize(new java.awt.Dimension(100, 29));
-    launchButton.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        launchButtonActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
-    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 12);
-    getContentPane().add(launchButton, gridBagConstraints);
-
-    copyButton.setText("Copy");
-    copyButton.setMaximumSize(new java.awt.Dimension(100, 29));
-    copyButton.setPreferredSize(new java.awt.Dimension(100, 29));
-    copyButton.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        copyButtonActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
-    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 12);
-    getContentPane().add(copyButton, gridBagConstraints);
+    getContentPane().add(outputScrollPane, gridBagConstraints);
 
     msgLabel.setText(" ");
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -818,6 +738,119 @@ public class LinkTweaker
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     getContentPane().add(msgLabel, gridBagConstraints);
+
+    buttonPanel.setLayout(new java.awt.GridBagLayout());
+
+    tweakButton.setText("Tweak");
+    tweakButton.setMaximumSize(new java.awt.Dimension(120, 29));
+    tweakButton.setMinimumSize(new java.awt.Dimension(89, 29));
+    tweakButton.setPreferredSize(new java.awt.Dimension(100, 29));
+    tweakButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        tweakButtonActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+    buttonPanel.add(tweakButton, gridBagConstraints);
+
+    launchButton.setText("Launch");
+    launchButton.setMaximumSize(new java.awt.Dimension(120, 29));
+    launchButton.setPreferredSize(new java.awt.Dimension(100, 29));
+    launchButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        launchButtonActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 5;
+    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+    buttonPanel.add(launchButton, gridBagConstraints);
+
+    copyButton.setText("Copy");
+    copyButton.setMaximumSize(new java.awt.Dimension(120, 29));
+    copyButton.setMinimumSize(new java.awt.Dimension(89, 29));
+    copyButton.setPreferredSize(new java.awt.Dimension(100, 29));
+    copyButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        copyButtonActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 6;
+    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+    buttonPanel.add(copyButton, gridBagConstraints);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridheight = 3;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 0.5;
+    getContentPane().add(buttonPanel, gridBagConstraints);
+
+    optionPanel.setLayout(new java.awt.GridBagLayout());
+
+    spCruftCheckBox.setText("Remove SharePoint Cruft?");
+    spCruftCheckBox.setMaximumSize(new java.awt.Dimension(192, 29));
+    spCruftCheckBox.setMinimumSize(new java.awt.Dimension(192, 29));
+    spCruftCheckBox.setPreferredSize(new java.awt.Dimension(192, 29));
+    spCruftCheckBox.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        spCruftCheckBoxActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+    optionPanel.add(spCruftCheckBox, gridBagConstraints);
+
+    redirectCheckBox.setText("Insert Redirect?");
+    redirectCheckBox.setMaximumSize(new java.awt.Dimension(128, 29));
+    redirectCheckBox.setMinimumSize(new java.awt.Dimension(128, 29));
+    redirectCheckBox.setPreferredSize(new java.awt.Dimension(128, 29));
+    redirectCheckBox.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        redirectCheckBoxActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridy = 5;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+    optionPanel.add(redirectCheckBox, gridBagConstraints);
+
+    spacesCheckBox.setText("Show spaces as spaces?");
+    spacesCheckBox.setMaximumSize(new java.awt.Dimension(182, 29));
+    spacesCheckBox.setMinimumSize(new java.awt.Dimension(182, 29));
+    spacesCheckBox.setPreferredSize(new java.awt.Dimension(182, 29));
+    spacesCheckBox.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        spacesCheckBoxActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridy = 6;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+    optionPanel.add(spacesCheckBox, gridBagConstraints);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridheight = 3;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.weightx = 0.5;
+    getContentPane().add(optionPanel, gridBagConstraints);
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
@@ -911,12 +944,14 @@ public class LinkTweaker
     });
   }
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JPanel buttonPanel;
   private javax.swing.JButton copyButton;
   private javax.swing.JLabel inputLabel;
   private javax.swing.JScrollPane inputScrollPane;
   private javax.swing.JTextArea inputTextArea;
   private javax.swing.JButton launchButton;
   private javax.swing.JLabel msgLabel;
+  private javax.swing.JPanel optionPanel;
   private javax.swing.JLabel outputLabel;
   private javax.swing.JScrollPane outputScrollPane;
   private javax.swing.JTextArea outputTextArea;
