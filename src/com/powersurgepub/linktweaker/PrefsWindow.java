@@ -25,7 +25,9 @@ package com.powersurgepub.linktweaker;
  *
  * @author  hbowie
  */
-public class PrefsWindow extends javax.swing.JFrame {
+public class PrefsWindow 
+    extends javax.swing.JFrame
+      implements WindowToManage {
 
   private XOS               xos = XOS.getShared();
   

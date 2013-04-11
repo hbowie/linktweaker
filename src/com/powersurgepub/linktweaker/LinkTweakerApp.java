@@ -23,7 +23,15 @@ package com.powersurgepub.linktweaker;
  */
 public interface LinkTweakerApp {
   
-  public void setTweakedLink (String tweakedLink);
+  /**
+   Set a link field to a new value after it has been tweaked. 
+  
+   @param tweakedLink The link after it has been tweaked. 
+   @param linkID      A string identifying the link, in case there are more
+                      than one. This would be the text used in the label
+                      for the link. 
+  */
+  public void setTweakedLink (String tweakedLink, String linkID);
   
 }
 

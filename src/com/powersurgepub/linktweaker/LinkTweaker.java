@@ -35,6 +35,8 @@ public class LinkTweaker
     extends javax.swing.JFrame
         implements
             HyperlinkListener,
+            LinkTweakerInterface,
+            WindowToManage,
             XHandler {
   
   public static final String PROGRAM_NAME = "LinkTweaker";
@@ -43,6 +45,8 @@ public class LinkTweaker
   public static final String SP_SITES = "/sites";
   
   public static final boolean PREFS_AVAILABLE = true;
+  
+  public static final String DEFAULT_LINK_ID = "Link";
   
   private boolean runningAsMainApp = true;
   
@@ -95,6 +99,8 @@ public class LinkTweaker
   private			JMenuItem						helpPSPubWebSite;
   private     JSeparator          helpSeparator3;
   private     JMenuItem           helpReduceWindowSize;
+  
+  private     String              linkID = DEFAULT_LINK_ID;
 
   /**
    Creates new form LinkTweaker
@@ -284,6 +290,13 @@ public class LinkTweaker
   public void setLink(String passedLink) {
     inputTextArea.setText(passedLink);
     outputTextArea.setText(passedLink);
+    linkID = "Link";
+  }
+  
+  public void setLink(String passedLink, String LinkID) {
+    inputTextArea.setText(passedLink);
+    outputTextArea.setText(passedLink);
+    this.linkID = linkID;
   }
   
   /**
@@ -505,7 +518,7 @@ public class LinkTweaker
     outputTextArea.setText(link.toString());
     msgLabel.setText(" ");
     if (linkTweakerApp != null) {
-      linkTweakerApp.setTweakedLink (link.toString());
+      linkTweakerApp.setTweakedLink (link.toString(), linkID);
     }
   }
   
@@ -548,7 +561,7 @@ public class LinkTweaker
     displayAuxiliaryWindow(aboutWindow);
   }
   
-  public void displayAuxiliaryWindow(JFrame window) {
+  public void displayAuxiliaryWindow(WindowToManage window) {
     window.setLocation(
         this.getX() + 60,
         this.getY() + 60);
