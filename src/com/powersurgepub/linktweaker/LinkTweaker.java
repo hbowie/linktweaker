@@ -140,7 +140,8 @@ public class LinkTweaker
     Logger.getShared().setLogThreshold (LogEvent.NORMAL);
     WindowMenuManager.getShared().add(logWindow);
     
-    aboutWindow = new AboutWindow(false, true, false, false, "2012");
+    aboutWindow = new AboutWindow(false, true, false, false, false, false, 
+        "2012");
     
     tweakerPrefs = new TweakerPrefs();
     
