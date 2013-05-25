@@ -40,7 +40,7 @@ public class LinkTweaker
             XHandler {
   
   public static final String PROGRAM_NAME = "LinkTweaker";
-  public static final String PROGRAM_VERSION = "1.00";
+  public static final String PROGRAM_VERSION = "1.10";
   
   public static final String SP_SITES = "/sites";
   
@@ -308,9 +308,19 @@ public class LinkTweaker
     StringBuilder link = new StringBuilder(inputTextArea.getText().trim());
     
     // If it's a file path, insert the proper URL protocol (aka scheme)
+    // and make sure it's got five slashes following. 
     if (link.length() > 0 && 
         (link.charAt(0) == '\\' || link.charAt(0) == '/')) {
       link.insert(0, "file:");  
+    }
+    if (link.length() >= 5
+        && link.substring(0,5).equalsIgnoreCase("file:")) {
+      while (link.length() > 5
+          && (link.charAt(5) == '/' || link.charAt(5) == '\\')) {
+        link.deleteCharAt(5);
+      }
+      link.delete(0, 5);
+      link.insert(0, "file://///");
     }
     
     // Remove a trailing period, in case one got attached somehow along the way
@@ -395,6 +405,15 @@ public class LinkTweaker
         j = ifMatchReplaceWith (link, i, "%5F", "_");
       }
       
+      // If we've got a backslash being used to escape a space, then let's
+      // remove the escape character and leave the space. 
+      if (j == i) {
+        if (spacesCheckBox.isSelected()) {
+          j = ifMatchReplaceWith (link, i, "\\ ", " ");
+        } else {
+          j = ifMatchReplaceWith (link, i, "\\ ", "%20");
+        }
+      }
       // If we've got backslashes, let's turn them around
       if (j == i) {
         j = ifMatchReplaceWith (link, i, "\\", "/");

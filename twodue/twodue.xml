@@ -154,4 +154,90 @@
       
     </linkedtags>
   </item>
+  <item>
+    <tags>
+      Bug Fix
+    </tags>
+    <Tag1>
+      Bug Fix
+    </Tag1>
+    <Tag2>
+      
+    </Tag2>
+    <Tag3>
+      
+    </Tag3>
+    <Tag4>
+      
+    </Tag4>
+    <Tag5>
+      
+    </Tag5>
+    <duedate>
+      05/25/2013
+    </duedate>
+    <starttime>
+      00:00 AM
+    </starttime>
+    <duration>
+      N/A
+    </duration>
+    <alertprior>
+      N/A
+    </alertprior>
+    <priority>
+      3
+    </priority>
+    <status>
+      9
+    </status>
+    <assignedto>
+      
+    </assignedto>
+    <sequence>
+      1.10
+    </sequence>
+    <title>
+      Fixed local file references
+    </title>
+    <description>
+      
+    </description>
+    <outcome>
+      Changed file: references to always use five slashes at the start of the path, since this seems to be compatible with all the browsers I&apos;ve tested with (and anything else fails with Firefox).
+    </outcome>
+    <webpage>
+      
+    </webpage>
+    <recursunit>
+      N/A
+    </recursunit>
+    <recursevery>
+      0
+    </recursevery>
+    <recursdayofweek>
+      -1
+    </recursdayofweek>
+    <recurswithinmonth>
+      -1
+    </recurswithinmonth>
+    <duedateymd>
+      2013-05-25
+    </duedateymd>
+    <type>
+      Action
+    </type>
+    <length>
+      0
+    </length>
+    <lastmod>
+       
+    </lastmod>
+    <lastmoddateymd>
+       
+    </lastmoddateymd>
+    <linkedtags>
+      &lt;a href=&apos;tags/bug-fix.html&apos; rel=&apos;tag&apos;&gt;Bug Fix&lt;/a&gt;
+    </linkedtags>
+  </item>
 </twodue>
