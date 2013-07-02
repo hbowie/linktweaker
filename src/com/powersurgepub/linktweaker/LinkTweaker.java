@@ -454,26 +454,21 @@ public class LinkTweaker
         j = i;
 
         // Delete '&Folder' and anything that follows
-        if (j == i) {
-          if (link.charAt(i) == '&'
-              && (i + 7) < link.length()
-              && link.substring(i, i + 7).equals("&Folder")) {
-            link.delete(i, link.length());
-            i--;
-          }
+        if (j == i && i < link.length()) {
+          ifMatchDeleteToEnd (link, i, "&Folder");
         }
         
         // Delete '&Source=' and anything that follows
-        if (j == i) {
-          if (link.charAt(i) == '&'
-              && (i + 8) < link.length()
-              && link.substring(i, i + 8).equals("&Source=")) {
-            link.delete(i, link.length());
-            i--;
-          }
+        if (j == i && i < link.length()) {
+          ifMatchDeleteToEnd (link, i, "&Source=");
+        }
+        
+        // Delete '?InitialTabId=' and anything that follows
+        if (j == i && i < link.length()) {
+          ifMatchDeleteToEnd (link, i, "?InitialTabId=");
         }
 
-        if (j == i) {
+        if (j == i && i < link.length()) {
           j = ifMatchReplaceWith (link, i, 
               "/Forms/AllItems.aspx?RootFolder=/", 
               "/");
@@ -498,16 +493,16 @@ public class LinkTweaker
             } // end if we found duplicate paths
           } // end if we found the rootfolder string
         } 
-        if (j == i) {
+        if (j == i && i < link.length()) {
           j = ifMatchReplaceWith (link, i, 
               "/Forms/AllItems.aspx", 
               "/");
         }
-        if (j == i) {
+        if (j == i && i < link.length()) {
           j = ifMatchReplaceWith (link, i, "/SitePages/Home.aspx", "/");
         }
         
-        if (j == i) {
+        if (j == i && i < link.length()) {
           j = ifMatchReplaceWith (link, i, "/Pages/Default.aspx", "/");
         }
         
@@ -540,6 +535,23 @@ public class LinkTweaker
     if (linkTweakerApp != null) {
       linkTweakerApp.setTweakedLink (link.toString(), linkID);
     }
+  }
+  
+  /**
+   If the given before string matches the next sequence of characters, then 
+   delete the matching string and everything that follows. 
+  
+   @param str    The StringBuffer to possibly be changed.
+   @param i      The current position in the StringBuffer to be examined. 
+   @param before The matching string we are looking for. 
+  
+  */
+  private void ifMatchDeleteToEnd
+      (StringBuilder str, int i, String before) {
+    if ((i + before.length()) <= str.length()
+        && str.substring(i, i + before.length()).equals(before)) {
+      str.delete(i, str.length());
+    } 
   }
   
   /**
