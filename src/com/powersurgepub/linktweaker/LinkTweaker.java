@@ -109,7 +109,9 @@ public class LinkTweaker
     constructApp();
   }
   
-  public LinkTweaker (LinkTweakerApp linkTweakerApp, JTabbedPane prefsTabs) {
+  public LinkTweaker (
+      LinkTweakerApp linkTweakerApp,  
+      JTabbedPane prefsTabs) {
     this.runningAsMainApp = false;
     this.linkTweakerApp = linkTweakerApp;
     home = Home.getShared ();

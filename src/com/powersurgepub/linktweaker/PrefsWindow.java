@@ -16,9 +16,9 @@
 
 package com.powersurgepub.linktweaker;
 
-  import com.powersurgepub.psdatalib.ui.*;
   import com.powersurgepub.psutils.*;
   import com.powersurgepub.xos2.*;
+  import java.awt.*;
   import javax.swing.*;
 
 /**
