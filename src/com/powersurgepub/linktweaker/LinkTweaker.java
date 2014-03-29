@@ -40,7 +40,7 @@ public class LinkTweaker
             XHandler {
   
   public static final String PROGRAM_NAME = "LinkTweaker";
-  public static final String PROGRAM_VERSION = "1.10";
+  public static final String PROGRAM_VERSION = "1.20";
   
   public static final String SP_SITES = "/sites";
   
@@ -463,6 +463,11 @@ public class LinkTweaker
         // Delete '&Source=' and anything that follows
         if (j == i && i < link.length()) {
           ifMatchDeleteToEnd (link, i, "&Source=");
+        }
+        
+        // Delete '&SortField=' and anything that follows
+        if (j == i && i < link.length()) {
+          ifMatchDeleteToEnd (link, i, "&SortField=");
         }
         
         // Delete '?InitialTabId=' and anything that follows
