@@ -447,10 +447,36 @@ public class LinkTweaker
       j = ifMatchReplaceWith (link, i, "> ", "");
     }
     
-    // Let's make another pass through the link to clean up SharePoint cruft
+    // Let's make another couple of passes through the link to clean up SharePoint cruft
     if (spCruftCheckBox.isSelected()) {
+      
+      // Pass 1 -- Look for a duplication of '/sites'
       i = 0;
       int sites1Index = -1;
+
+      while (i < link.length()) {
+        j = i;
+        
+        // If we find '/sites' repeated, let's delete the duplication
+        if ((i + SP_SITES.length()) < link.length()
+            && link.substring(i, i + SP_SITES.length()).equals(SP_SITES)) {
+          if (sites1Index < 0) {
+            sites1Index = i;
+          } else {
+            link.delete(sites1Index, i);
+            j = sites1Index + SP_SITES.length();
+          }
+        }
+        
+        if (j == i) {
+          i++;
+        } else {
+          i = j;
+        }
+      } // end while scanning link
+        
+      // Pass 2 -- Look for everything else
+      i = 0;
 
       while (i < link.length()) {
         j = i;
@@ -513,24 +539,13 @@ public class LinkTweaker
           j = ifMatchReplaceWith (link, i, "/Pages/Default.aspx", "/");
         }
         
-        // If we find '/sites' repeated, let's delete the duplication
-        if ((i + SP_SITES.length()) < link.length()
-            && link.substring(i, i + SP_SITES.length()).equals(SP_SITES)) {
-          if (sites1Index < 0) {
-            sites1Index = i;
-          } else {
-            link.delete(sites1Index, i);
-            j = sites1Index + SP_SITES.length();
-          }
-        }
-        
         if (j == i) {
           i++;
         } else {
           i = j;
         }
-      }
-    }
+      } // end while scanning link
+    } // end if sharepoint cruft box removal desired
     
     // Insert a redirect, if user has so specified
     if (redirectCheckBox.isSelected()) {
