@@ -12,8 +12,3 @@
 
     Initial release of Link Tweaker.
 
-
-
-
-
-
