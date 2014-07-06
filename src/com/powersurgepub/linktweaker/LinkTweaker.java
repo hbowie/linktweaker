@@ -205,38 +205,9 @@ public class LinkTweaker
     // Help Menu 
     helpMenu = new JMenu("Help");
     menuBar.add (helpMenu);
+    home.setHelpMenu(this, helpMenu);
     xos.setHelpMenu (helpMenu);
-    home.setHelpMenu(helpMenu);
     xos.setHelpMenuItem (home.getHelpMenuItem());
-    /*
-    if (! xos.isRunningOnMacOS()) {
-      helpAbout = new JMenuItem ("About " + PROGRAM_NAME);
-      helpMenu.add (helpAbout);
-      helpAbout.addActionListener (new ActionListener ()
-        {
-          public void actionPerformed (ActionEvent event) {
-            handleAbout();
-          } // end actionPerformed method
-        } // end action listener
-      );
-    } 
-    helpSeparator3 = new JSeparator();
-    helpMenu.add (helpSeparator3);
-    */
-    
-    helpReduceWindowSize = new JMenuItem ("Reduce Window Size");
-    helpReduceWindowSize.setAccelerator (KeyStroke.getKeyStroke (KeyEvent.VK_W,
-        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-    helpMenu.add (helpReduceWindowSize);
-    helpReduceWindowSize.addActionListener(new ActionListener()
-      {
-        public void actionPerformed (ActionEvent event) {
-          setDefaultScreenSizeAndLocation();
-        }
-      });
-    
-
-    
     
     WindowMenuManager.getShared().addWindowMenu(windowMenu);
     /* 
