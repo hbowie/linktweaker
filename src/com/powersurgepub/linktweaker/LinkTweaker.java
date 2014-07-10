@@ -471,6 +471,11 @@ public class LinkTweaker
         if (j == i && i < link.length()) {
           ifMatchDeleteToEnd (link, i, "?InitialTabId=");
         }
+        
+        // Delete '?Web=' and anything that follows
+        if (j == i && i < link.length()) {
+          ifMatchDeleteToEnd (link, i, "?Web=");
+        }
 
         if (j == i && i < link.length()) {
           j = ifMatchReplaceWith (link, i, 
