@@ -510,9 +510,13 @@ public class LinkTweaker
         if (j == i && i < link.length()) {
           j = ifMatchReplaceWith (link, i, "/SitePages/Home.aspx", "/");
         }
-        
         if (j == i && i < link.length()) {
           j = ifMatchReplaceWith (link, i, "/Pages/Default.aspx", "/");
+        }
+        if (j == i && i < link.length()) {
+          j = ifMatchReplaceWith (link, i,
+              "/_layouts/15/start.aspx#/",
+              "/");
         }
         
         if (j == i) {
