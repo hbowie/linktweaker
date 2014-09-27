@@ -280,6 +280,16 @@ public class LinkTweaker
     
     StringBuilder link = new StringBuilder(inputTextArea.getText().trim());
     
+    // Remove angle brackets around the link
+    if (link.length() > 2 &&
+        link.charAt(0) == '<') {
+      link.deleteCharAt(0);
+    }
+    if (link.length() > 1 && 
+        link.charAt(link.length() - 1) == '>') {
+      link.deleteCharAt(link.length() - 1);
+    }
+    
     // If it's a file path, insert the proper URL protocol (aka scheme)
     // and make sure it's got five slashes following. 
     if (link.length() > 0 && 
