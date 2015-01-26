@@ -40,7 +40,7 @@ public class LinkTweaker
             XHandler {
   
   public static final String PROGRAM_NAME = "LinkTweaker";
-  public static final String PROGRAM_VERSION = "1.20";
+  public static final String PROGRAM_VERSION = "1.30";
   
   public static final String SP_SITES = "/sites";
   
@@ -155,6 +155,9 @@ public class LinkTweaker
     }
 
     constructWindow();
+    
+    getButton.setVisible(false);
+    putButton.setVisible(false);
     
     xos.setXHandler (this);
     xos.setMainWindow (this);
@@ -544,9 +547,9 @@ public class LinkTweaker
     
     outputTextArea.setText(link.toString());
     msgLabel.setText(" ");
-    if (linkTweakerApp != null) {
-      linkTweakerApp.setTweakedLink (link.toString(), linkID);
-    }
+    // if (linkTweakerApp != null) {
+    //    linkTweakerApp.putTweakedLink (link.toString(), linkID);
+    // }
   }
   
   /**
@@ -696,9 +699,11 @@ public class LinkTweaker
     outputTextArea = new javax.swing.JTextArea();
     msgLabel = new javax.swing.JLabel();
     buttonPanel = new javax.swing.JPanel();
+    getButton = new javax.swing.JButton();
     tweakButton = new javax.swing.JButton();
     launchButton = new javax.swing.JButton();
     copyButton = new javax.swing.JButton();
+    putButton = new javax.swing.JButton();
     optionPanel = new javax.swing.JPanel();
     spCruftCheckBox = new javax.swing.JCheckBox();
     redirectCheckBox = new javax.swing.JCheckBox();
@@ -798,6 +803,21 @@ public class LinkTweaker
 
     buttonPanel.setLayout(new java.awt.GridBagLayout());
 
+    getButton.setText("Get");
+    getButton.setMaximumSize(new java.awt.Dimension(120, 29));
+    getButton.setMinimumSize(new java.awt.Dimension(89, 29));
+    getButton.setPreferredSize(new java.awt.Dimension(100, 29));
+    getButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        getButtonActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+    buttonPanel.add(getButton, gridBagConstraints);
+
     tweakButton.setText("Tweak");
     tweakButton.setMaximumSize(new java.awt.Dimension(120, 29));
     tweakButton.setMinimumSize(new java.awt.Dimension(89, 29));
@@ -809,7 +829,7 @@ public class LinkTweaker
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     buttonPanel.add(tweakButton, gridBagConstraints);
 
@@ -823,7 +843,7 @@ public class LinkTweaker
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     buttonPanel.add(launchButton, gridBagConstraints);
 
@@ -838,9 +858,24 @@ public class LinkTweaker
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     buttonPanel.add(copyButton, gridBagConstraints);
+
+    putButton.setText("Put");
+    putButton.setMaximumSize(new java.awt.Dimension(120, 29));
+    putButton.setMinimumSize(new java.awt.Dimension(89, 29));
+    putButton.setPreferredSize(new java.awt.Dimension(100, 29));
+    putButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        putButtonActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+    buttonPanel.add(putButton, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -966,6 +1001,18 @@ public class LinkTweaker
     windowClose();
   }//GEN-LAST:event_formWindowClosing
 
+  private void getButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getButtonActionPerformed
+    if (linkTweakerApp != null) {
+      inputTextArea.setText(linkTweakerApp.getLinkToTweak());
+    }
+  }//GEN-LAST:event_getButtonActionPerformed
+
+  private void putButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_putButtonActionPerformed
+    if (linkTweakerApp != null) {
+      linkTweakerApp.putTweakedLink(outputTextArea.getText(), outputTextArea.getName());
+    }
+  }//GEN-LAST:event_putButtonActionPerformed
+
   /**
    @param args the command line arguments
    */
@@ -1003,6 +1050,7 @@ public class LinkTweaker
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JPanel buttonPanel;
   private javax.swing.JButton copyButton;
+  private javax.swing.JButton getButton;
   private javax.swing.JLabel inputLabel;
   private javax.swing.JScrollPane inputScrollPane;
   private javax.swing.JTextArea inputTextArea;
@@ -1012,6 +1060,7 @@ public class LinkTweaker
   private javax.swing.JLabel outputLabel;
   private javax.swing.JScrollPane outputScrollPane;
   private javax.swing.JTextArea outputTextArea;
+  private javax.swing.JButton putButton;
   private javax.swing.JCheckBox redirectCheckBox;
   private javax.swing.JCheckBox spCruftCheckBox;
   private javax.swing.JCheckBox spacesCheckBox;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 - 2013 Herb Bowie
+ * Copyright 2012 - 2015 Herb Bowie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,13 @@ package com.powersurgepub.linktweaker;
 public interface LinkTweakerApp {
   
   /**
+   Get the current link so that it can be tweaked. 
+  
+   @return The Link to be tweaked. 
+  */
+  public String getLinkToTweak();
+  
+  /**
    Set a link field to a new value after it has been tweaked. 
   
    @param tweakedLink The link after it has been tweaked. 
@@ -31,7 +38,7 @@ public interface LinkTweakerApp {
                       than one. This would be the text used in the label
                       for the link. 
   */
-  public void setTweakedLink (String tweakedLink, String linkID);
+  public void putTweakedLink (String tweakedLink, String linkID);
   
 }
 
