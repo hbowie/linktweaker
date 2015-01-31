@@ -279,9 +279,38 @@ public class LinkTweaker
   /**
    Let's straighten out the URL submitted by the user. 
   */
-  private void tweakLink() {
+  private void tweakThisLink() {
     
-    StringBuilder link = new StringBuilder(inputTextArea.getText().trim());
+    String tweakedLink = tweakAnyLink (
+        inputTextArea.getText(),
+        spacesCheckBox.isSelected(),
+        spCruftCheckBox.isSelected(),
+        redirectCheckBox.isSelected(),
+        tweakerPrefs.getRedirectURL());
+    
+    outputTextArea.setText(tweakedLink);
+    msgLabel.setText(" ");
+  }
+  
+  /**
+   Utility to tweak any link. 
+  
+   @param linkToTweak    The link to be tweaked. 
+   @param showSpaces     Should spaces be shown as spaces?
+   @param removeSPCruft  Should we remove SharePoint cruft?
+   @param insertRedirect Should we insert a redirect to the URL?
+   @param redirectURL    The redirect string to use, if requested. 
+  
+   @return The new link, after tweaking. 
+  */
+  public static String tweakAnyLink(
+      String linkToTweak,
+      boolean showSpaces,
+      boolean removeSPCruft,
+      boolean insertRedirect,
+      String redirectURL) {
+    
+    StringBuilder link = new StringBuilder(linkToTweak.trim());
     
     // Remove angle brackets around the link
     if (link.length() > 2 &&
@@ -323,12 +352,11 @@ public class LinkTweaker
       j = i;
       
       // If user wants to see spaces, then let's show them spaces
-      if (j == i
-          && spacesCheckBox.isSelected()) {
+      if (j == i && showSpaces) {
         j = ifMatchReplaceWith (link, i, "%20", " ");
       }
       if (j == i
-          && spacesCheckBox.isSelected()) {
+          && showSpaces) {
         j = ifMatchReplaceWith (link, i, "%2520", " ");
       }
       
@@ -394,7 +422,7 @@ public class LinkTweaker
       // If we've got a backslash being used to escape a space, then let's
       // remove the escape character and leave the space. 
       if (j == i) {
-        if (spacesCheckBox.isSelected()) {
+        if (showSpaces) {
           j = ifMatchReplaceWith (link, i, "\\ ", " ");
         } else {
           j = ifMatchReplaceWith (link, i, "\\ ", "%20");
@@ -407,7 +435,7 @@ public class LinkTweaker
       
       // If user doesn't want to see spaces, then let's encode them
       if (j == i
-          && (! spacesCheckBox.isSelected())) {
+          && (! showSpaces)) {
         j = ifMatchReplaceWith (link, i, " ", "%20");
       }
       
@@ -432,7 +460,7 @@ public class LinkTweaker
     }
     
     // Let's make another couple of passes through the link to clean up SharePoint cruft
-    if (spCruftCheckBox.isSelected()) {
+    if (removeSPCruft) {
       
       // Pass 1 -- Look for a duplication of '/sites'
       i = 0;
@@ -541,12 +569,11 @@ public class LinkTweaker
     } // end if sharepoint cruft box removal desired
     
     // Insert a redirect, if user has so specified
-    if (redirectCheckBox.isSelected()) {
-      link.insert(0, tweakerPrefs.getRedirectURL());
+    if (insertRedirect) {
+      link.insert(0, redirectURL);
     }
-    
-    outputTextArea.setText(link.toString());
-    msgLabel.setText(" ");
+    return link.toString();
+
     // if (linkTweakerApp != null) {
     //    linkTweakerApp.putTweakedLink (link.toString(), linkID);
     // }
@@ -561,7 +588,7 @@ public class LinkTweaker
    @param before The matching string we are looking for. 
   
   */
-  private void ifMatchDeleteToEnd
+  private static void ifMatchDeleteToEnd
       (StringBuilder str, int i, String before) {
     if ((i + before.length()) <= str.length()
         && str.substring(i, i + before.length()).equals(before)) {
@@ -582,7 +609,7 @@ public class LinkTweaker
            was made, this will be equal to the i param. If a replacement was 
            made, it will be equal to i + the length of the to string. 
   */
-  private int ifMatchReplaceWith 
+  private static int ifMatchReplaceWith 
       (StringBuilder str, int i, String before, String after) {
     if ((i + before.length()) <= str.length()
         && str.substring(i, i + before.length()).equals(before)) {
@@ -948,19 +975,19 @@ public class LinkTweaker
   }// </editor-fold>//GEN-END:initComponents
 
   private void inputTextAreaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_inputTextAreaFocusLost
-    tweakLink();
+    tweakThisLink();
   }//GEN-LAST:event_inputTextAreaFocusLost
 
   private void redirectCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_redirectCheckBoxActionPerformed
-    tweakLink();
+    tweakThisLink();
   }//GEN-LAST:event_redirectCheckBoxActionPerformed
 
   private void tweakButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tweakButtonActionPerformed
-    tweakLink();
+    tweakThisLink();
   }//GEN-LAST:event_tweakButtonActionPerformed
 
   private void launchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_launchButtonActionPerformed
-    tweakLink();
+    tweakThisLink();
     boolean ok = home.openURL(outputTextArea.getText());
     if (! ok) {
       msgLabel.setText("Error in launching link in Web browser");
@@ -968,7 +995,7 @@ public class LinkTweaker
   }//GEN-LAST:event_launchButtonActionPerformed
 
   private void spCruftCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spCruftCheckBoxActionPerformed
-    tweakLink();
+    tweakThisLink();
   }//GEN-LAST:event_spCruftCheckBoxActionPerformed
 
   private void inputTextAreaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_inputTextAreaFocusGained
@@ -976,19 +1003,19 @@ public class LinkTweaker
   }//GEN-LAST:event_inputTextAreaFocusGained
 
   private void outputTextAreaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_outputTextAreaFocusGained
-    tweakLink();
+    tweakThisLink();
     outputTextArea.selectAll();
   }//GEN-LAST:event_outputTextAreaFocusGained
 
   private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyButtonActionPerformed
-    tweakLink();
+    tweakThisLink();
     outputTextArea.selectAll();
     outputTextArea.copy();
   }//GEN-LAST:event_copyButtonActionPerformed
 
   private void spacesCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spacesCheckBoxActionPerformed
     outputTextArea.setWrapStyleWord(spacesCheckBox.isSelected());
-    tweakLink();
+    tweakThisLink();
   }//GEN-LAST:event_spacesCheckBoxActionPerformed
 
   private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
