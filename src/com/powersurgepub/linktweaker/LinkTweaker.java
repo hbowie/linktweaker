@@ -360,7 +360,7 @@ public class LinkTweaker
       handleQuit();
     } else {
       // System.out.println("  Running as Main App = false");
-      WindowMenuManager.getShared().hide(this);
+      WindowMenuManager.getShared().hideAndRemove(this);
     }
   }
   
